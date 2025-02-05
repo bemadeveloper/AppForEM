@@ -13,6 +13,14 @@
 		D7745B552D53C334001BDFB0 /* AppForEM.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D7745B532D53C334001BDFB0 /* AppForEM.xcdatamodeld */; };
 		D7745B572D53C336001BDFB0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D7745B562D53C336001BDFB0 /* Assets.xcassets */; };
 		D7745B5A2D53C336001BDFB0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = D7745B592D53C336001BDFB0 /* Base */; };
+		D7745B652D53CBB4001BDFB0 /* TodosResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B642D53CBB4001BDFB0 /* TodosResponse.swift */; };
+		D7745B672D53CBD5001BDFB0 /* TodoJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B662D53CBD5001BDFB0 /* TodoJSON.swift */; };
+		D7745B692D53CC3C001BDFB0 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B682D53CC3C001BDFB0 /* CoreDataManager.swift */; };
+		D7745B6C2D53CF94001BDFB0 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B6B2D53CF94001BDFB0 /* APIService.swift */; };
+		D7745B732D53DE3E001BDFB0 /* Notes+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B712D53DE3E001BDFB0 /* Notes+CoreDataClass.swift */; };
+		D7745B742D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B722D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift */; };
+		D7745B772D53E41B001BDFB0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D7745B762D53E41B001BDFB0 /* SnapKit */; };
+		D7745B792D53E41B001BDFB0 /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D7745B782D53E41B001BDFB0 /* SnapKit-Dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +32,12 @@
 		D7745B562D53C336001BDFB0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7745B592D53C336001BDFB0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D7745B5B2D53C336001BDFB0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D7745B642D53CBB4001BDFB0 /* TodosResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosResponse.swift; sourceTree = "<group>"; };
+		D7745B662D53CBD5001BDFB0 /* TodoJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoJSON.swift; sourceTree = "<group>"; };
+		D7745B682D53CC3C001BDFB0 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		D7745B6B2D53CF94001BDFB0 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		D7745B712D53DE3E001BDFB0 /* Notes+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notes+CoreDataClass.swift"; sourceTree = "<group>"; };
+		D7745B722D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notes+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +45,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7745B772D53E41B001BDFB0 /* SnapKit in Frameworks */,
+				D7745B792D53E41B001BDFB0 /* SnapKit-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +56,8 @@
 		D7745B3E2D53C334001BDFB0 = {
 			isa = PBXGroup;
 			children = (
+				D7745B712D53DE3E001BDFB0 /* Notes+CoreDataClass.swift */,
+				D7745B722D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift */,
 				D7745B492D53C334001BDFB0 /* AppForEM */,
 				D7745B482D53C334001BDFB0 /* Products */,
 			);
@@ -56,6 +74,8 @@
 		D7745B492D53C334001BDFB0 /* AppForEM */ = {
 			isa = PBXGroup;
 			children = (
+				D7745B6A2D53CF6C001BDFB0 /* URLSession */,
+				D7745B632D53CB87001BDFB0 /* CoreData */,
 				D7745B612D53C6D9001BDFB0 /* App */,
 				D7745B4E2D53C334001BDFB0 /* ViewController.swift */,
 				D7745B622D53C6F2001BDFB0 /* Resources */,
@@ -83,6 +103,24 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		D7745B632D53CB87001BDFB0 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				D7745B642D53CBB4001BDFB0 /* TodosResponse.swift */,
+				D7745B662D53CBD5001BDFB0 /* TodoJSON.swift */,
+				D7745B682D53CC3C001BDFB0 /* CoreDataManager.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		D7745B6A2D53CF6C001BDFB0 /* URLSession */ = {
+			isa = PBXGroup;
+			children = (
+				D7745B6B2D53CF94001BDFB0 /* APIService.swift */,
+			);
+			path = URLSession;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -99,6 +137,10 @@
 			dependencies = (
 			);
 			name = AppForEM;
+			packageProductDependencies = (
+				D7745B762D53E41B001BDFB0 /* SnapKit */,
+				D7745B782D53E41B001BDFB0 /* SnapKit-Dynamic */,
+			);
 			productName = AppForEM;
 			productReference = D7745B472D53C334001BDFB0 /* AppForEM.app */;
 			productType = "com.apple.product-type.application";
@@ -127,6 +169,9 @@
 				Base,
 			);
 			mainGroup = D7745B3E2D53C334001BDFB0;
+			packageReferences = (
+				D7745B752D53E41B001BDFB0 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			productRefGroup = D7745B482D53C334001BDFB0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -153,9 +198,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7745B652D53CBB4001BDFB0 /* TodosResponse.swift in Sources */,
+				D7745B672D53CBD5001BDFB0 /* TodoJSON.swift in Sources */,
 				D7745B4F2D53C334001BDFB0 /* ViewController.swift in Sources */,
 				D7745B4B2D53C334001BDFB0 /* AppDelegate.swift in Sources */,
 				D7745B4D2D53C334001BDFB0 /* SceneDelegate.swift in Sources */,
+				D7745B692D53CC3C001BDFB0 /* CoreDataManager.swift in Sources */,
+				D7745B732D53DE3E001BDFB0 /* Notes+CoreDataClass.swift in Sources */,
+				D7745B742D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift in Sources */,
+				D7745B6C2D53CF94001BDFB0 /* APIService.swift in Sources */,
 				D7745B552D53C334001BDFB0 /* AppForEM.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,6 +420,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D7745B752D53E41B001BDFB0 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D7745B762D53E41B001BDFB0 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7745B752D53E41B001BDFB0 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		D7745B782D53E41B001BDFB0 /* SnapKit-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7745B752D53E41B001BDFB0 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = "SnapKit-Dynamic";
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		D7745B532D53C334001BDFB0 /* AppForEM.xcdatamodeld */ = {
