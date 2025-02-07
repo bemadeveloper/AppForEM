@@ -14,11 +14,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+       
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground() 
+        appearance.backgroundColor = .clear
+       
+        
         window = UIWindow(windowScene: windowScene)
-        let viewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: viewController)
+        //let viewController = ViewController(presenter: TodoListPresenterInput)
+        
+        let todoListModule = TodoListRouter.createModule()
+        
+        let navigationController = UINavigationController(rootViewController: todoListModule)
+        
+        navigationController.navigationBar.standardAppearance = appearance
+        navigationController.navigationBar.scrollEdgeAppearance = appearance
+        //navigationController.navigationBar.isTranslucent = false
+        //navigationController.navigationBar.backgroundColor = .systemBackground
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
+
     }
 }
 

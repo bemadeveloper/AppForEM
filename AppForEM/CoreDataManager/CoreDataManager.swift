@@ -11,7 +11,27 @@ import CoreData
 
 class CoreDataManager {
     static let shared = CoreDataManager()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
+    private let persistenContainer: NSPersistentContainer
+    
+    private init() {
+        persistenContainer = NSPersistentContainer(name: "AppForEM")
+        persistenContainer.loadPersistentStores { _, error in
+            if let error = error {
+                print("Failed to load: \(error)")
+            }
+        }
+    }
+    
+    var context: NSManagedObjectContext {
+        return persistenContainer.viewContext
+    }
+    
+    func fetchTodosCoreData() -> [Todo] {
+        let request: NSFetchRequest<Todo> = Todo.fetchRequest()
+        return (try? context.fetch(request)) ?? []
+        
+    }
     
     func saveTodos(from jsonData: Data) {
         do {
@@ -31,21 +51,9 @@ class CoreDataManager {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: NSNotification.Name("TodosUpdated"), object: nil)
             }
-            
             print("Данные успешно сохранены")
         } catch {
             print("Ошибка парсинга JSON или сохранения: \(error)")
-        }
-    }
-    
-    func fetchTodosCoreData() -> [Todo] {
-        let request = NSFetchRequest<Todo>(entityName: "Todo") 
-        
-        do {
-            return try context.fetch(request)
-        } catch {
-            print("\(error)")
-            return []
         }
     }
     
