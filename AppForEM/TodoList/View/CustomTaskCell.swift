@@ -69,10 +69,12 @@ class CustomTaskCell: UITableViewCell {
     }
     
     func configure(with todo: Todo) {
-        todoTitleLabel.text = todo.todo
-        let imageName = todo.completed ? "checkmark.circle.fill" : "circle"
+        let textAttributes: [NSAttributedString.Key: Any] = todo.completed ? [.strikethroughStyle: NSUnderlineStyle.single.rawValue, .foregroundColor: UIColor.gray] : [:]
+        todoTitleLabel.attributedText = NSAttributedString(string: todo.todo ?? "", attributes: textAttributes)
+        
+        let imageName = todo.completed ? "checkmark.circle" : "circle"
         doneMarkButton.setImage(UIImage(systemName: imageName), for: .normal)
-        doneMarkButton.tintColor = todo.completed ? .yellow : .gray
+        doneMarkButton.tintColor = todo.completed ? .systemYellow : .gray
     }
     
     // MARK: - Targets
