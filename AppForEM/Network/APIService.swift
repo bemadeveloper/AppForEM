@@ -11,7 +11,7 @@ import UIKit
 class APIService {
     static let shared = APIService()
     
-    func fetchTodos(completion: @escaping (Result<Data, Error>) -> Void) {
+    func loadFromServer(completion: @escaping (Result<Data, Error>) -> Void) {
         guard let url = URL(string: "https://dummyjson.com/todos") else { return }
         
         let task = URLSession.shared.dataTask(with: url) { data, response, error in

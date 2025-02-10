@@ -8,6 +8,6 @@
 import Foundation
 
 protocol TodoListPresenterOutput: AnyObject {
-    func displayTodos(_ todos: [Todo])
+    func displayTodos(_ todos: [Notes])
     func displayError(_ message: String)
 }

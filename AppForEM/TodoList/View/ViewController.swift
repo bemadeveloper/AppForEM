@@ -12,7 +12,7 @@ import Speech
 class ViewController: UIViewController, UISearchBarDelegate {
     
     private let presenter: TodoListPresenterInput
-    var todos: [Todo] = []
+    var todos: [Notes] = []
     
     private let searchBar = UISearchBar()
     
@@ -33,11 +33,14 @@ class ViewController: UIViewController, UISearchBarDelegate {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         NotificationCenter.default.addObserver(self, selector: #selector(todosUpdated), name: NSNotification.Name("TodosUpdated"), object: nil)
+        
+        
         setupUI()
+        CoreDataManager.shared.deleteAllTodos()
         loadAndSaveTodos()
     }
     
-    // MARK: - TableView
+    // MARK: - UI
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
@@ -47,6 +50,16 @@ class ViewController: UIViewController, UISearchBarDelegate {
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
+    }()
+    
+    private lazy var plusButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapPlusButton), for: .touchUpInside)
+        button.tintColor = .yellow
+        
+        return button
     }()
     
     // MARK: - Setups
@@ -69,15 +82,23 @@ class ViewController: UIViewController, UISearchBarDelegate {
         titleLabel.text  = "Задачи"
         titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         titleLabel.textColor = UIColor.label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.textAlignment = .left
         
-        containerView.addSubview(titleLabel)
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, plusButton])
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
         
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview()
-            make.bottom.equalToSuperview()
+        containerView.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(8)
+        }
+
+        containerView.snp.makeConstraints { make in
+            make.width.equalTo(UIScreen.main.bounds.width - 32) // Установить ширину
         }
         
         let leftBarButtonItem = UIBarButtonItem(customView: containerView)
@@ -94,6 +115,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
     private func setupHierarchy() {
         view.addSubview(tableView)
         view.addSubview(searchBar)
+        //view.addSubview(plusButton)
     }
     
     private func setupLayout() {
@@ -108,6 +130,12 @@ class ViewController: UIViewController, UISearchBarDelegate {
             make.top.equalTo(searchBar.snp.bottom).offset(10) 
             make.left.right.bottom.equalToSuperview()
         }
+        
+//        plusButton.snp.makeConstraints { make in
+//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(-30)
+//            make.trailing.equalToSuperview().offset(-30)
+//            make.width.height.equalTo(24)
+//        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -118,9 +146,19 @@ class ViewController: UIViewController, UISearchBarDelegate {
         todos = CoreDataManager.shared.fetchTodosCoreData()
         tableView.reloadData()
     }
+    
+    
+    @objc func didTapPlusButton() {
+        print("Tap")
+        let addViewController = DetailViewController()
+        addViewController.modalPresentationStyle = .fullScreen
+        present(addViewController, animated: true)
+    }
 
+
+    
     func loadAndSaveTodos() {
-        APIService.shared.fetchTodos { result in
+        APIService.shared.loadFromServer(completion: { result in
             switch result {
             case .success(let jsonData):
                 DispatchQueue.main.async {
@@ -136,7 +174,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
                     print("Ошибка загрузки -> \(error)")
                 }
             }
-        }
+        })
     }
 }
 
@@ -159,6 +197,10 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     private func toggleCompleted(at indexPath: IndexPath) {
         let todo = todos[indexPath.row]
         todo.completed.toggle()
@@ -173,7 +215,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension ViewController: TodoListPresenterOutput {
-    func displayTodos(_ todos: [Todo]) {
+    func displayTodos(_ todos: [Notes]) {
         self.todos = todos
         tableView.reloadData()
     }

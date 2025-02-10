@@ -14,6 +14,12 @@ class CoreDataManager {
     
     private let persistenContainer: NSPersistentContainer
     
+    var context: NSManagedObjectContext {
+        return persistenContainer.viewContext
+    }
+    
+    // MARK: - Init
+    
     private init() {
         persistenContainer = NSPersistentContainer(name: "AppForEM")
         persistenContainer.loadPersistentStores { _, error in
@@ -23,14 +29,31 @@ class CoreDataManager {
         }
     }
     
-    var context: NSManagedObjectContext {
-        return persistenContainer.viewContext
+    // MARK: - CRUD
+    
+    func createNewTask(id: Int64, todo: String, completed: Bool, userId: Int64, descriptionOfTask: String?, date: Date?) {
+        let task = Notes(context: context)
+        task.id = id
+        task.todo = todo
+        task.completed = completed
+        task.userId = userId
+        task.descriptionOfTask = descriptionOfTask
+        task.date = date
+        
+        saveContext()
     }
     
-    func fetchTodosCoreData() -> [Todo] {
-        let request: NSFetchRequest<Todo> = Todo.fetchRequest()
+    func fetchTodosCoreData() -> [Notes] {
+        let request: NSFetchRequest<Notes> = Notes.fetchRequest()
         return (try? context.fetch(request)) ?? []
-        
+    }
+    
+    private func saveContext() {
+        do {
+            try context.save()
+        } catch {
+            print("Ошибка сохранения: \(error)")
+        }
     }
     
     func saveTodos(from jsonData: Data) {
@@ -39,11 +62,8 @@ class CoreDataManager {
             let todosResponse = try decoder.decode(TodosResponse.self, from: jsonData)
             
             for todoJSON in todosResponse.todos {
-                let todo = Todo(context: context)
-                todo.id = todoJSON.id
-                todo.todo = todoJSON.todo
-                todo.completed = todoJSON.completed
-                todo.userId = todoJSON.userId
+                let todo = Notes.create(from: todoJSON, context: context)
+                print("Создан note: \(todo)")
             }
             
             try context.save()
@@ -57,8 +77,10 @@ class CoreDataManager {
         }
     }
     
+    
+    
     func deleteAllTodos() {
-            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Todo.fetchRequest()
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Notes.fetchRequest()
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
             do {

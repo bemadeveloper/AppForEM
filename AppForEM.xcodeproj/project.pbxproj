@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D72CB5EC2D5A0E8D00C7E1FA /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72CB5EB2D5A0E8D00C7E1FA /* DetailViewController.swift */; };
 		D7745B4B2D53C334001BDFB0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B4A2D53C334001BDFB0 /* AppDelegate.swift */; };
 		D7745B4D2D53C334001BDFB0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B4C2D53C334001BDFB0 /* SceneDelegate.swift */; };
 		D7745B4F2D53C334001BDFB0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7745B4E2D53C334001BDFB0 /* ViewController.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D72CB5EB2D5A0E8D00C7E1FA /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		D7745B472D53C334001BDFB0 /* AppForEM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppForEM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7745B4A2D53C334001BDFB0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D7745B4C2D53C334001BDFB0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 			children = (
 				D7745B4E2D53C334001BDFB0 /* ViewController.swift */,
 				D7745B9D2D568B78001BDFB0 /* CustomTaskCell.swift */,
+				D72CB5EB2D5A0E8D00C7E1FA /* DetailViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 				D7745B692D53CC3C001BDFB0 /* CoreDataManager.swift in Sources */,
 				D7745B732D53DE3E001BDFB0 /* Notes+CoreDataClass.swift in Sources */,
 				D7745B882D552F63001BDFB0 /* TodoListInteractorOutput.swift in Sources */,
+				D72CB5EC2D5A0E8D00C7E1FA /* DetailViewController.swift in Sources */,
 				D7745B8F2D553366001BDFB0 /* TodoListPresenterOutput.swift in Sources */,
 				D7745B742D53DE3E001BDFB0 /* Notes+CoreDataProperties.swift in Sources */,
 				D7745B9C2D567E31001BDFB0 /* TodoJSON.swift in Sources */,

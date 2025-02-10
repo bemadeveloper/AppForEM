@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground() 
         appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
        
         
         window = UIWindow(windowScene: windowScene)
@@ -30,11 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         navigationController.navigationBar.standardAppearance = appearance
         navigationController.navigationBar.scrollEdgeAppearance = appearance
-        //navigationController.navigationBar.isTranslucent = false
-        //navigationController.navigationBar.backgroundColor = .systemBackground
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
-
     }
 }
 

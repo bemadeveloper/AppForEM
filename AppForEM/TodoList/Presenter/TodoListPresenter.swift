@@ -25,7 +25,7 @@ class TodoListPresenter: TodoListPresenterInput {
 }
 
 extension TodoListPresenter: TodoListInteractorOutput {
-    func didFetchTodos(_ todos: [Todo]) {
+    func didFetchTodos(_ todos: [Notes]) {
         view?.displayTodos(todos)
     }
     

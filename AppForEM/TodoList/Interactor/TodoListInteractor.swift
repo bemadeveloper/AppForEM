@@ -12,10 +12,12 @@ class TodoListInteractor: TodoListInteractorInput {
     weak var output: TodoListPresenterOutput?
     weak var presenter: TodoListInteractorOutput?
     private let apiService = APIService.shared
+    
+    // MARK: - Coredata
     private let coredataManager = CoreDataManager.shared
     
     func fetchTodos() {
-        apiService.fetchTodos { [weak self] result in
+        apiService.loadFromServer( completion: { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let jsonData):
@@ -29,7 +31,7 @@ class TodoListInteractor: TodoListInteractorInput {
                     self.presenter?.didFailWithError(error)
                 }
             }
-        }
+        })
     }
     
     func deleteAllTodos() {
