@@ -9,9 +9,9 @@ import Foundation
 
 class TodoListPresenter: TodoListPresenterInput {
     weak var view: TodoListPresenterOutput?
-    private let interactor: TodoListInteractorInput
+    private let interactor: TodoListInteractor
     
-    init(interactor: TodoListInteractorInput) {
+    init(interactor: TodoListInteractor) {
         self.interactor = interactor
     }
     
@@ -25,8 +25,12 @@ class TodoListPresenter: TodoListPresenterInput {
 }
 
 extension TodoListPresenter: TodoListInteractorOutput {
+    func didUpdateTaskSuccessfully() {
+    }
+    
     func didFetchTodos(_ todos: [Notes]) {
-        view?.displayTodos(todos)
+        view?.displayTodos(todos) 
+        
     }
     
     func didFailWithError(_ error: any Error) {

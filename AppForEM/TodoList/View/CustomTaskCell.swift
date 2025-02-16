@@ -13,18 +13,19 @@ class CustomTaskCell: UITableViewCell {
     
     static var identifier = "CustomTaskCell"
     
-    
-    
-    private lazy var todoTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12)
-        
-        return label
-    }()
+    // MARK: - UI
     
     private lazy var descriptionOfTaskLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    private lazy var todoTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.numberOfLines = 0
         return label
     }()
     
@@ -55,6 +56,7 @@ class CustomTaskCell: UITableViewCell {
         
         setupHierarchy()
         setupLayout()
+
         
         let interaction = UIContextMenuInteraction(delegate: self)
         self.addInteraction(interaction)
@@ -93,14 +95,22 @@ class CustomTaskCell: UITableViewCell {
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(todoTitleLabel.snp.bottom).offset(4)
             make.leading.trailing.equalTo(descriptionOfTaskLabel)
-            make.bottom.equalToSuperview().offset(-10)
+            make.bottom.equalToSuperview().offset(-10).priority(.low)
         }
         
         doneMarkButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.top.equalToSuperview().offset(8)
-            make.width.height.equalTo(24)
+            make.width.height.lessThanOrEqualTo(24)
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        descriptionOfTaskLabel.invalidateIntrinsicContentSize()
+        todoTitleLabel.invalidateIntrinsicContentSize()
+        dateLabel.invalidateIntrinsicContentSize()
+        doneMarkButton.invalidateIntrinsicContentSize()
     }
     
     func configure(with todo: Notes) {

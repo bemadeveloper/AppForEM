@@ -15,7 +15,7 @@ class TodoListRouter {
         let view = ViewController(presenter: presenter)
         
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.presenter = presenter as! any TodoListInteractorOutput
         
         return view
         

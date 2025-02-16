@@ -11,7 +11,7 @@ import Speech
 
 class ViewController: UIViewController, UISearchBarDelegate {
     
-    private let presenter: TodoListPresenterInput
+    private let presenter: TodoListPresenter
     var todos: [Notes] = []
     
     private let searchBar = UISearchBar()
@@ -19,7 +19,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
     // MARK: - Init
     
     init(presenter: TodoListPresenterInput) {
-        self.presenter = presenter
+        self.presenter = presenter as! TodoListPresenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,18 +34,18 @@ class ViewController: UIViewController, UISearchBarDelegate {
         view.backgroundColor = .systemBackground
         NotificationCenter.default.addObserver(self, selector: #selector(todosUpdated), name: NSNotification.Name("TodosUpdated"), object: nil)
         
-        
         setupUI()
-        CoreDataManager.shared.deleteAllTodos()
-        loadAndSaveTodos()
+        presenter.deleteTodos()
+        presenter.loadTodos()
     }
     
     // MARK: - UI
     
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
         tableView.register(CustomTaskCell.self, forCellReuseIdentifier: CustomTaskCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorColor = .gray
         tableView.isOpaque = true
         tableView.dataSource = self
         tableView.delegate = self
@@ -71,8 +71,6 @@ class ViewController: UIViewController, UISearchBarDelegate {
         
         setupHierarchy()
         setupLayout()
-        
-        todos = CoreDataManager.shared.fetchTodosCoreData()
     }
     
     private func setupCustomTitle() {
@@ -98,7 +96,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
         }
 
         containerView.snp.makeConstraints { make in
-            make.width.equalTo(UIScreen.main.bounds.width - 32) // Установить ширину
+            make.width.equalTo(UIScreen.main.bounds.width - 32)
         }
         
         let leftBarButtonItem = UIBarButtonItem(customView: containerView)
@@ -115,7 +113,6 @@ class ViewController: UIViewController, UISearchBarDelegate {
     private func setupHierarchy() {
         view.addSubview(tableView)
         view.addSubview(searchBar)
-        //view.addSubview(plusButton)
     }
     
     private func setupLayout() {
@@ -123,59 +120,58 @@ class ViewController: UIViewController, UISearchBarDelegate {
         searchBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
             make.left.right.equalToSuperview().inset(16)
-            make.height.equalTo(45)
+            make.height.lessThanOrEqualTo(45)
         }
         
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(10) 
             make.left.right.bottom.equalToSuperview()
         }
-        
-//        plusButton.snp.makeConstraints { make in
-//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(-30)
-//            make.trailing.equalToSuperview().offset(-30)
-//            make.width.height.equalTo(24)
-//        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         print("Поиск: \(searchText)")
     }
 
+    private var isUpdating = false
+    
     @objc private func todosUpdated() {
-        todos = CoreDataManager.shared.fetchTodosCoreData()
+        guard !isUpdating else { return }
+            isUpdating = true
+        
         tableView.reloadData()
+        
     }
     
     
     @objc func didTapPlusButton() {
         print("Tap")
-        let addViewController = DetailViewController()
+        let addViewController = DetailViewController(presenter: presenter)
         addViewController.modalPresentationStyle = .fullScreen
         present(addViewController, animated: true)
     }
 
 
     
-    func loadAndSaveTodos() {
-        APIService.shared.loadFromServer(completion: { result in
-            switch result {
-            case .success(let jsonData):
-                DispatchQueue.main.async {
-                    CoreDataManager.shared.saveTodos(from: jsonData)
-                }
-                
-                DispatchQueue.main.async {
-                    self.todos = CoreDataManager.shared.fetchTodosCoreData()
-                    self.tableView.reloadData()
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Ошибка загрузки -> \(error)")
-                }
-            }
-        })
-    }
+//    func loadAndSaveTodos() {
+//        APIService.shared.loadFromServer(completion: { result in
+//            switch result {
+//            case .success(let jsonData):
+//                DispatchQueue.main.async {
+//                    CoreDataManager.shared.saveTodos(from: jsonData)
+//                }
+//                
+//                DispatchQueue.main.async {
+//                    self.todos = CoreDataManager.shared.fetchTodosCoreData(context: CoreDataManager.shared.context)
+//                    self.tableView.reloadData()
+//                }
+//            case .failure(let error):
+//                DispatchQueue.main.async {
+//                    print("Ошибка загрузки -> \(error)")
+//                }
+//            }
+//        })
+//    }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -184,12 +180,15 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        tableView.rowHeight = UITableView.automaticDimension
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTaskCell.identifier, for: indexPath) as? CustomTaskCell else {
             return UITableViewCell()
         }
         
         let todo = todos[indexPath.row]
         cell.configure(with: todo)
+       
         
         cell.onDoneMarkTapped = { [weak self] in
             self?.toggleCompleted(at: indexPath)
@@ -199,6 +198,17 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let selectedCell = todos[indexPath.row]
+        let editVC = EditViewController(presenter: presenter)
+        editVC.task = selectedCell
+        
+        editVC.onSave = { [weak self] updatedTodo in
+            self?.todos[indexPath.row] = updatedTodo
+            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+        
+        navigationController?.pushViewController(editVC, animated: true)
     }
     
     private func toggleCompleted(at indexPath: IndexPath) {
@@ -215,6 +225,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension ViewController: TodoListPresenterOutput {
+   
+    
     func displayTodos(_ todos: [Notes]) {
         self.todos = todos
         tableView.reloadData()

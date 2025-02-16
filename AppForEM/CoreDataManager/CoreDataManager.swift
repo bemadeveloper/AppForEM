@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 
 class CoreDataManager {
+    
     static let shared = CoreDataManager()
     
     private let persistenContainer: NSPersistentContainer
@@ -31,23 +32,6 @@ class CoreDataManager {
     
     // MARK: - CRUD
     
-    func createNewTask(id: Int64, todo: String, completed: Bool, userId: Int64, descriptionOfTask: String?, date: Date?) {
-        let task = Notes(context: context)
-        task.id = id
-        task.todo = todo
-        task.completed = completed
-        task.userId = userId
-        task.descriptionOfTask = descriptionOfTask
-        task.date = date
-        
-        saveContext()
-    }
-    
-    func fetchTodosCoreData() -> [Notes] {
-        let request: NSFetchRequest<Notes> = Notes.fetchRequest()
-        return (try? context.fetch(request)) ?? []
-    }
-    
     private func saveContext() {
         do {
             try context.save()
@@ -55,6 +39,17 @@ class CoreDataManager {
             print("Ошибка сохранения: \(error)")
         }
     }
+    
+    func createNewTask(descriptionOfTask: String?, date: Date?, todo: String) {
+        let task = Notes(context: context)
+        task.descriptionOfTask = descriptionOfTask
+        task.date = date
+        task.todo = todo
+        
+        saveContext()
+    }
+    
+    //MARK: - Work with API
     
     func saveTodos(from jsonData: Data) {
         do {
@@ -66,7 +61,7 @@ class CoreDataManager {
                 print("Создан note: \(todo)")
             }
             
-            try context.save()
+            saveContext()
             
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: NSNotification.Name("TodosUpdated"), object: nil)
@@ -77,7 +72,30 @@ class CoreDataManager {
         }
     }
     
+    func fetchTodosCoreData() -> [Notes]? {
+        let request: NSFetchRequest<Notes> = Notes.fetchRequest()
+        do {
+            let tasks = try context.fetch(request)
+            print("📌 Найдено сохраненных задач: \(tasks.count)")
+            return tasks
+        } catch {
+            print("❌ Ошибка загрузки данных: \(error.localizedDescription)")
+            return nil
+        }
+    }
     
+    func clearCoreData(context: NSManagedObjectContext) {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Notes.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+            print("Core Data очищена перед обновлением")
+        } catch {
+            print("Ошибка очистки Core Data: \(error.localizedDescription)")
+        }
+    }
     
     func deleteAllTodos() {
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Notes.fetchRequest()
@@ -90,4 +108,41 @@ class CoreDataManager {
                 print("Ошибка удаления данных: \(error)")
             }
         }
+    
+    func updateTask(for id: Int64, newDescription: String, newData: Data, newTodoTask: String) {
+        let request: NSFetchRequest<Notes> = Notes.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %d", id)
+        
+        do {
+            if let task = try context.fetch(request).first {
+                
+                task.descriptionOfTask = newDescription
+                task.todo = newTodoTask
+                task.date = Date()
+                
+                try context.save()
+                print("✅ Изменённые данные успешно сохранены в Core Data!")
+                
+                let fetchRequest: NSFetchRequest<Notes> = Notes.fetchRequest()
+                let notes = try context.fetch(fetchRequest)
+                print("📌 Всего задач в Core Data: \(notes.count)")
+                for note in notes {
+                    print("📝 \(note.todo ?? "Без названия") - \(note.descriptionOfTask ?? "")")
+                }
+                
+                NotificationCenter.default.post(name: NSNotification.Name("TodosUpdated"), object: nil)
+            } else {
+                print("⚠️ Задача с id \(id) не найдена.")
+            }
+        } catch {
+            print("❌ Ошибка при обновлении задачи: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteOneTask(id: Int64) {
+        if let dataArray = fetchTodosCoreData() {
+            context.delete(dataArray[Int(id)])
+            saveContext()
+        }
+    }
 }

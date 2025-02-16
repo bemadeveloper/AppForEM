@@ -9,5 +9,7 @@ import Foundation
 
 protocol TodoListInteractorInput {
     func fetchTodos()
+    func update(taskId: Int64, newDescription: String, newData: Data, newTodoTask: String)
+    
     func deleteAllTodos()
 }

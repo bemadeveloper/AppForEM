@@ -43,3 +43,8 @@ extension Notes {
         return Calendar.current.date(byAdding: .day, value: -randomDaysAgo, to: Date()) ?? Date()
     }
 }
+
+extension Notes: Identifiable {
+    
+    
+}

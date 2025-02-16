@@ -1,20 +1,22 @@
 //
-//  DetailViewController.swift
+//  EditViewController.swift
 //  AppForEM
 //
 //  Created by Bema on 10/2/25.
 //
 
-import Foundation
 import UIKit
 
-class DetailViewController: UIViewController {
+class EditViewController: UIViewController {
     
     var task: Notes?
-    private let presenter: TodoListPresenter
+    var onSave: ((Notes) -> Void)?
+    private let presenterEditVC: TodoListPresenter
     
-    init(presenter: TodoListPresenter) {
-        self.presenter = presenter
+    // MARK: - Init
+    
+    init(presenter: TodoListPresenterInput) {
+        self.presenterEditVC = presenter as! TodoListPresenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,7 +29,6 @@ class DetailViewController: UIViewController {
     private lazy var descriptionTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        textView.text = "Название задачи"
         textView.isScrollEnabled = false
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
@@ -44,38 +45,27 @@ class DetailViewController: UIViewController {
     private lazy var titleTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        textView.text = "Описание задачи"
         textView.isScrollEnabled = false
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
-    
-    private lazy var saveButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Назад", for: .normal)
-        button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
 
     // MARK: - LyfeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.systemBackground
-        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Назад", style: .plain, target: self, action: #selector(backButtonTapped))
         
         setupHierarchy()
         setupLayout()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        loadData()
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
+        
     }
     
     
@@ -85,17 +75,11 @@ class DetailViewController: UIViewController {
         view.addSubview(descriptionTextView)
         view.addSubview(dateLabel)
         view.addSubview(titleTextView)
-        view.addSubview(saveButton)
     }
     
     private func setupLayout() {
-        saveButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
-            make.leading.equalToSuperview().offset(16)
-        }
-        
         descriptionTextView.snp.makeConstraints { make in
-            make.top.equalTo(saveButton.snp.bottom).offset(40)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
             make.height.greaterThanOrEqualTo(60).priority(.required)
         }
@@ -112,7 +96,15 @@ class DetailViewController: UIViewController {
         }
     }
     
-    // MARK: - Save and Update
+    private func loadData() {
+        guard let task = task else { return }
+        descriptionTextView.text = task.descriptionOfTask
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        dateLabel.text = formatter.string(from: task.date ?? Date())
+        titleTextView.text = task.todo
+    }
+    // MARK: - Navigation
 
     private func saveChanges() {
         guard let task = task else { return }
@@ -120,19 +112,45 @@ class DetailViewController: UIViewController {
         task.todo = titleTextView.text
         task.date = Date()
         
-        presenter.update(taskId: task.id, newDescription: descriptionTextView.text, newData: Data(), newTodoTask: titleTextView.text)
+        onSave?(task)
         
         do {
-            try task.managedObjectContext?.save()
+            try presenterEditVC.update(taskId: task.id, newDescription: descriptionTextView.text, newData: Data(), newTodoTask: titleTextView.text)
         } catch {
             print("Ошибка сохранения: \(error.localizedDescription)")
         }
     }
     
-    @objc private func saveButtonTapped() {
+    @objc private func backButtonTapped() {
         saveChanges()
-        present(ViewController(presenter: presenter), animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
+
 }
 
+extension EditViewController: UITextViewDelegate {
+//    func textViewDidChange(_ textView: UITextView) {
+//        let maxHeight: CGFloat = textView == titleTextView ? 60 : 200 // Заголовок макс. 60, описание макс. 200
+//        let size = CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude)
+//        let estimatedSize = textView.sizeThatFits(size)
+//        
+//        textView.isScrollEnabled = estimatedSize.height > maxHeight
+//        
+//        textView.snp.remakeConstraints { make in
+//            make.leading.trailing.equalToSuperview().inset(10)
+//            make.height.equalTo(min(max(40, estimatedSize.height), maxHeight))
+//            
+//            if textView == descriptionTextView {
+//                make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+//            } else {
+//                make.top.equalTo(dateLabel.snp.bottom).offset(6)
+//                make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+//            }
+//        }
+//        
+//        UIView.animate(withDuration: 0.2) {
+//            self.view.layoutIfNeeded()
+//        }
+//    }
+}

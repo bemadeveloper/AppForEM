@@ -12,6 +12,7 @@ class TodoListInteractor: TodoListInteractorInput {
     weak var output: TodoListPresenterOutput?
     weak var presenter: TodoListInteractorOutput?
     private let apiService = APIService.shared
+    var taskArray = [Notes]()
     
     // MARK: - Coredata
     private let coredataManager = CoreDataManager.shared
@@ -23,8 +24,9 @@ class TodoListInteractor: TodoListInteractorInput {
             case .success(let jsonData):
                 DispatchQueue.main.async {
                     self.coredataManager.saveTodos(from: jsonData)
-                    let todos = self.coredataManager.fetchTodosCoreData()
-                    self.presenter?.didFetchTodos(todos)
+                    
+                    self.taskArray = self.coredataManager.fetchTodosCoreData() ?? [Notes]()
+                    self.presenter?.didFetchTodos(self.taskArray)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -32,6 +34,12 @@ class TodoListInteractor: TodoListInteractorInput {
                 }
             }
         })
+    }
+    
+    func update(taskId: Int64, newDescription: String, newData: Data, newTodoTask: String) {
+        coredataManager.updateTask(for: taskId, newDescription: newDescription, newData: newData, newTodoTask: newTodoTask)
+        
+        presenter?.didUpdateTaskSuccessfully()
     }
     
     func deleteAllTodos() {

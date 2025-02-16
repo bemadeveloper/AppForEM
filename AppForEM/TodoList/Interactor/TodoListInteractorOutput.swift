@@ -9,7 +9,9 @@ import Foundation
 
 protocol TodoListInteractorOutput: AnyObject {
     func didFetchTodos(_ todos: [Notes])
-    
+    func didUpdateTaskSuccessfully()
+    func didDeleteOneTodo()
+    func didCreate()
     func didFailWithError(_ error: Error)
     
 }
